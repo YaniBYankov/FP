@@ -108,33 +108,22 @@
       (cond
       [(zero? (length l)) res]
       [(zero? cnt) res]
-      [(symbol? (car res)) res]
-      [(and (>= (length l) 2) (symbol? (list-ref res 1))) res]
+      [(not (number? (car res))) res]
       [else (helper (- cnt 1) (cons (op (car res) (list-ref res 1)) (cddr res)))]))
   (helper n l)
     )
+(applyPair + (reverse '(1 'x 2 'a 3 4 5 6)) 2)
 
-
-(define (getFirstNonNumber l)
- 
-  (define (helper curr res)
-    (if (and (>= (length curr) 1) (number? (car curr))) (helper (cdr curr) (+ res 1)) res)  
-  )
-   (if (list? l)
-       (- (helper l 0) 1)
-       0
-       )
- )
 
 (define (run-machine l)
   
   (define (helper curr res )
     (cond
-      [(> curr (- (length l) 1)) res] 
-      [(procedure? (list-ref l curr)) (helper (+ curr 1) (map (λ (x) (if (number? x) ((list-ref l curr) x) x)) res))]  
-      [(pair? (list-ref l curr)) (helper (+ curr 1) (applyPair (car (list-ref l curr)) res (cdr (list-ref l curr))))] 
+      [(> curr (- (length l) 1)) res]
+      [(procedure? (list-ref l curr)) (helper (+ curr 1) (map ((λ (x) (if (number? x) ((list-ref l curr) x) x))) res))] 
+      [(pair? (list-ref l curr)) (helper (+ curr 1) (applyPair (car (list-ref curr l)) (cdr (list-ref l curr))))]
       [else (helper (+ curr 1) (cons (list-ref l curr) res))]
 ))
   (helper 0 '()))
 
-(run-machine (list 1 'x 4 'a 9 16 25 sqrt 6 (cons + 2) (cons * 5)))
+(run-machine (list 1 'x 4 'a 9 16 25  6 (cons + 2) (cons * 5)))
