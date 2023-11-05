@@ -1,0 +1,132 @@
+#lang racket
+;practce for first Kontrolno
+
+;week 2
+
+; 1
+
+(define (fib-recursive n)
+  (cond
+    [(zero? n) 0]
+    [(= 1 n) 1]
+    [else (+ (fib-recursive (- n 1)) (fib-recursive (- n 2)))]
+    )
+  )
+
+(define (fib-iterative n)
+  (define (helper n0 n1 res i)
+    (cond
+      [(zero? n) n0]
+      [(= 1 n) n1]
+      [(>= i n) res]
+      [else (helper n1 (+ n1 n0) (+ n1 n0) (+ i 1))]))
+  (helper 0 1 0 1)
+  )
+ 
+(= (fib-recursive 12) 144)
+(= (fib-iterative 12) 144)
+
+; 2
+(define (help-galena new lost goal)
+  (let ([net (- new lost)])
+  (define (helper curr res)
+    (if (>= curr goal) res (helper (+ curr net) (+ res 1))))
+    (helper 0 -1))  
+  )
+
+;(help-galena 100000 10000 910000)
+(= (help-galena 100000 10000 910000) 10)
+
+; 4
+
+(define (rev n)
+  (define (helper  from to )
+    (cond
+      [(zero? from) to]
+      [else (helper (quotient from 10) (+ (remainder from 10) (* to 10)))]
+      )
+    )
+  (helper n 0)
+  )
+
+(= (rev 0) 0)
+(= (rev 123) 321)
+(= (rev 987654321) 123456789)
+(= (rev 12000) 21)
+
+; 5
+
+(define (my-recursive-pow x n)
+  (define (helper res currN)
+    (if (zero? currN) res (helper (* res x) (- currN 1))))
+  (helper 1 n)
+  )
+
+(= (my-recursive-pow 2 5) 32)
+(= (my-recursive-pow 15 3) 3375)
+
+; 6
+
+(define (prime? n)
+  (define (helper curr)
+    (cond
+      [(= n 1) #f]
+      [(> curr (- n 1)) #t]
+      [(zero? (remainder n curr)) #f]
+      [else (helper (+ curr 1))]))
+  (helper 2))
+
+(equal? (prime? 1) #f)
+(equal? (prime? 2) #t)
+(equal? (prime? 3) #t)
+(equal? (prime? 6) #f)
+(equal? (prime? 42) #f)
+(equal? (prime? 61) #t)
+
+; 7
+
+(define (increasing-digits? x)
+  (cond
+    [(zero? (quotient x 10)) #t]
+    [(< (remainder x 10) (remainder (quotient x 10) 10)) #f]
+    [else (increasing-digits? (quotient x 10))])
+  )
+
+(equal? (increasing-digits? 1244) #t)
+(equal? (increasing-digits? 12443) #f)
+
+; 8
+
+(define (palindromes-between a b)
+  (define (isPalindromes x)
+    (if (= x (rev x)) #t #f))
+  (define (helper curr res)
+    (cond
+      [(and (> curr b) (< a b)) res]
+      [(and (> curr a) (> a b)) res]
+      [(and (< a b) (isPalindromes curr)) (helper (+ curr 1) (+ res 1))]
+      [(and (> a b) (isPalindromes curr)) (helper (- curr 1) (+ res 1))]
+      [else (if (< a b) (helper (+ curr 1) res) (helper (- curr 1) res))]))
+  (helper a 0))
+
+(= (palindromes-between 1 101) 19)
+(= (palindromes-between 1 100) 18)
+(= (palindromes-between 100 1) 18)
+
+; 9
+
+(define (sum-first-special-numbers n d)
+  (define (findNextPrime x)
+    (if (prime? (+ 1 x)) (+ 1 x) (findNextPrime (+ 1 x))))
+  (define (containsDigit x d)
+    (if (= d (remainder x 10)) #t (containsDigit (quotient x 10) d)))
+  (define (helper curr remaining res)
+    (cond
+      [(and (< remaining 0) (containsDigit curr d)) (helper (findNextPrime curr) (- remaining 1) (+ res curr))]
+      [else  res]))
+  (helper 0 n 0)
+  )
+
+(= (sum-first-special-numbers 5 2) 392)
+(= (sum-first-special-numbers 5 3) 107)
+(= (sum-first-special-numbers 10 3) 462)

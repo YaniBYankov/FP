@@ -1,0 +1,84 @@
+#lang racket
+;practce for first Kontrolno
+
+;week 2
+
+; 1
+
+(define (fib-recursive n)
+  (cond
+    [(zero? n) 0]
+    [(= 1 n) 1]
+    [else (+ (fib-recursive (- n 1)) (fib-recursive (- n 2)))]
+    )
+  )
+
+(define (fib-iterative n)
+  (define (helper n0 n1 res i)
+    (cond
+      [(zero? n) n0]
+      [(= 1 n) n1]
+      [(>= i n) res]
+      [else (helper n1 (+ n1 n0) (+ n1 n0) (+ i 1))]))
+  (helper 0 1 0 1)
+  )
+ 
+(= (fib-recursive 12) 144)
+(= (fib-iterative 12) 144)
+
+; 2
+(define (help-galena new lost goal)
+  (let ([net (- new lost)])
+  (define (helper curr res)
+    (if (>= curr goal) res (helper (+ curr net) (+ res 1))))
+    (helper 0 -1))  
+  )
+
+;(help-galena 100000 10000 910000)
+(= (help-galena 100000 10000 910000) 10)
+
+; 4
+
+(define (rev n)
+  (define (helper  from to )
+    (cond
+      [(zero? from) to]
+      [else (helper (quotient from 10) (+ (remainder from 10) (* to 10)))]
+      )
+    )
+  (helper n 0)
+  )
+
+(= (rev 0) 0)
+(= (rev 123) 321)
+(= (rev 987654321) 123456789)
+(= (rev 12000) 21)
+
+; 5
+
+(define (my-recursive-pow x n)
+  (define (helper res currN)
+    (if (zero? currN) res (helper (* res x) (- currN 1))))
+  (helper 1 n)
+  )
+
+(= (my-recursive-pow 2 5) 32)
+(= (my-recursive-pow 15 3) 3375)
+
+; 6
+
+(define (prime? n)
+  (define (helper curr)
+    (cond
+      [(= n 1) #f]
+      [(> curr (- n 1)) #t]
+      [(zero? (remainder n curr)) #f]
+      [else (helper (+ curr 1))]))
+  (helper 2))
+
+(equal? (prime? 1) #f)
+(equal? (prime? 2) #t)
+(equal? (prime? 3) #t)
+(equal? (prime? 6) #f)
+(equal? (prime? 42) #f)
+(equal? (prime? 61) #t)
