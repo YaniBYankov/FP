@@ -138,3 +138,46 @@
   (helper 0 '()))
 
 (run-machine (list 1 'x 4 'a 9 16 25 sqrt 6 (cons + 2) (cons * 5)))
+
+#|
+Задача 3. (10 т.) Казваме, че един списък е подсписък на друг, ако елементите на първия списък се срещат непосредствено последователно във втория.
+Например, '(2 4) не е подсписък на '(1 2 3 4 5), но '(2 3 4) е. Казваме, че един списък от числа a се мажорира от списъка b,
+ако двата списъка са с еднаква дължина n и ai ≤ bi за всяко i ∈ [0; n). Списък от списъци ll наричаме мажорен,
+ако е вярно, че li се мажорира от подсписък на li+1 за всеки два съседни списъка li и li+1 в ll.
+Да се реализира функция is-major?, която проверява дали даден списък от списъци от числа е мажорен.
+
+Примери:
+
+(is-major? '((1 3) (4 2 7) (2 5 4 3 9 12))) → #t
+(is-major? '((1 3) (4 2 7) (2 5 3 3 9 12))) → #f
+Бонус: (5 т.) Да се реализира функция find-longest-major, която намира най-дългия мажорен подсписък на даден списък от списъци от числа.|#
+
+(define (is-majoring? a b)
+  (cond
+   [(not (equal? (length a) (length b))) #f]
+   [(and (zero? (length a)) (zero? (length b))) #t]
+   [(> (car a) (car b)) #f]
+   [else (is-majoring? (cdr a) (cdr b))])) 
+
+(define (extract l  from n)
+  (define (helper from cnt res)
+    (if (>= cnt n) 
+        res
+        (helper (+ from 1) (+ cnt 1) (cons (list-ref l from) res))))
+  (reverse (helper from 0 '())))
+
+(define (is-sub-majoring? a b)
+  (define (helper from)
+    (cond
+      [(> from (- (length b) (length a))) #f]
+      [(is-majoring? a (extract b from (length a))) #t] 
+      [else (helper (+ from 1))]) 
+    )
+  (helper 0)
+  )
+
+(define (is-major? l)
+  (accumulate-i (λ (x y) (and x y)) #t 0 (- (length l) 2) (λ (x) (if (is-sub-majoring? (list-ref l x) (list-ref l (+ x 1))) #t #f)) (λ (x) (+ x 1))) 
+  )
+(is-major? '((1 3) (4 2 7) (2 5 4 3 9 12) (4 2 7 3 5 5 4 12 12))) 
+(is-major? '((1 3) (4 2 7) (2 5 3 3 9 12)))
