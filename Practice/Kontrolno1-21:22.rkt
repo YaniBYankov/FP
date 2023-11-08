@@ -181,3 +181,55 @@
   )
 (is-major? '((1 3) (4 2 7) (2 5 4 3 9 12) (4 2 7 3 5 5 4 12 12))) 
 (is-major? '((1 3) (4 2 7) (2 5 3 3 9 12)))
+
+
+; първо контролно (2022/23 г.)
+; зад 1
+
+(define (isPrime? n)
+
+  (define (helper curr)
+    (cond
+      [(equal? curr n) #t]
+      [(zero? (remainder n curr)) #f]
+      [else  (helper (+ 1 curr))])
+   )
+  (if (equal? n 1) #f (helper 2))
+  )
+
+(define (trim n)
+  (define (helper curr res)
+    (cond
+      [(>= curr n) res]
+      [(and (isPrime? curr) (zero? (remainder res curr))) (helper (+ curr 1) (quotient res curr))]
+      [else (helper (+ curr 1) res)]))
+  (helper 2 n))
+(trim 360)
+
+; зад 2
+
+(define (hasPrimeDiv x y)
+  (define (helper curr)
+    (cond
+      [(or (> curr x) (> curr y)) #f]
+      [(and (and (zero? (remainder x curr)) (zero? (remainder y curr))) (isPrime? curr)) #t]
+      [else (helper (+ 1 curr))]))
+  (helper 2))
+
+(define (isUnitDiv k n)
+  (cond
+    [(and (not (zero? (remainder n k))) (not (zero? (remainder k n)))) #f]
+    [(>= n k) (not (hasPrimeDiv k (quotient n k)))]
+    [else (not (hasPrimeDiv k (quotient k n)))])
+  )
+
+(define (commonUnitary x y)
+  (define (helper curr res)
+    (cond
+      [(or (>= curr x) (>= curr y)) res]
+      [(and (isUnitDiv curr x) (isUnitDiv curr y)) (helper (+ curr 1) (+ res 1))]
+      [else (helper (+ curr 1) res)]))
+  (helper 2 0))
+
+(commonUnitary 60 140)
+
