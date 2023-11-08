@@ -233,3 +233,57 @@
 
 (commonUnitary 60 140)
 
+; зад 3
+
+(define (min a b)
+  (if (<= a b) a b))
+(define (max a b)
+  (if (>= a b) a b))
+
+(define (generateComputingRulesList op a b)
+  (define (helper curr res)
+    (cond
+      [(> curr (- (length a) 1)) res] 
+      [(< (op (list-ref a curr) (list-ref b curr) ) (min (list-ref a curr) (list-ref b curr))) (helper (+ curr 1) (cons 1 res))]
+      [(> (op (list-ref a curr) (list-ref b curr) ) (max (list-ref a curr) (list-ref b curr))) (helper (+ curr 1) (cons 2 res))]
+      [else (helper (+ curr 1) (cons (car res) res))]
+      )
+    )
+  (reverse (helper 1 '(1)))
+  )
+
+(define (selectiveMerge op a b)
+  (define (helper curr res)
+    (cond
+      [(> curr (- (length a) 1)) res]
+      [(equal? (list-ref (generateComputingRulesList * a b) curr) 1) (helper (+ curr 1) (cons (list-ref a curr) res))]
+      [(equal? (list-ref (generateComputingRulesList * a b) curr) 2) (helper (+ curr 1) (cons (op (list-ref a curr) (list-ref b curr)) res))]))
+  (reverse (helper 0 '())))
+
+(selectiveMerge * '(1 2 3 4 1 3 1 2) '(10 1 2 0 5 -2 -1 4))
+
+; зад 4
+
+(define (compatable a b)
+(define (helper a b)
+  (define (helper1 curr res)
+  (cond
+    [(> curr (- (min (length a) (length b)) 1)) res]
+    [(list? (member (list-ref a curr) b)) (helper1 (+ curr 1) (cons (list-ref a curr) res))]
+    [else (helper1 (+ curr 1) res)]))
+  (reverse (helper1 0 '())))
+  (if (<= (length a) (length b)) (helper a b) (helper b a)))
+
+(compatable '(1 3 5 7 8 20) '(1 3 7 28))
+
+(define (PreffNet mob net)
+  (define (getMaxNet curr res)
+    (cond
+      [(> curr (- (length net) 1)) res]
+      [(> (length (compatable mob (list-ref net curr))) res) (getMaxNet (+ curr 1) curr)] 
+      [else (getMaxNet (+ curr 1) res)])
+    )
+  (if (< (length (list-ref net (getMaxNet 0 0))) 2) '() (compatable mob (list-ref net (getMaxNet 0 0)))  
+  )
+  )
+(PreffNet '(1 3 5 7 8 20) '((1 3 8 40 41) (1 3 7 28) (5 8 20 1)))
